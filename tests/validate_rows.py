@@ -106,7 +106,7 @@ def test_overfull_rows_str_backwards(overfull_rows_str_backwards, err_msg):
     "malformed_str,err_msg",
     [(
         'hello,world,etc\nfoo"\netc,etc,etc\n',
-        "Absent field \(incomplete row\) at row={'intA': 'foo\"', 'intB': None, 'strC': None}",
+        r"Absent field \(incomplete row\) at row={'intA': 'foo\"', 'intB': None, 'strC': None}",
     )]
 )
 def test_absent_field_str(malformed_str, err_msg):
