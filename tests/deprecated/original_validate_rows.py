@@ -6,8 +6,9 @@ import pandas as pd
 
 __all__ = ["reader", "validate_dictreader", "validate_str"]
 
-sample_header_bytestr = b'intA,intB,strC\n'
+sample_header_bytestr = b"intA,intB,strC\n"
 sample_df = pd.read_csv(io.BytesIO(sample_header_bytestr))
+
 
 def reader(input_str, df=sample_df):
     """
@@ -19,6 +20,7 @@ def reader(input_str, df=sample_df):
     buf = io.StringIO(input_str)
     return csv.DictReader(buf, fieldnames=df.columns)
 
+
 def validate_dictreader(r):
     """
     Args:
@@ -29,7 +31,9 @@ def validate_dictreader(r):
     quotechar = '"'
     doublequote = True
     n_matchable = 1 + int(doublequote)
-    re_patt_str = rf'.*((?<!({escapechar}))({quotechar}))' + r'{1,' + f'{n_matchable}' + r'}.*'
+    re_patt_str = (
+        rf".*((?<!({escapechar}))({quotechar}))" + r"{1," + f"{n_matchable}" + r"}.*"
+    )
     re_patt = re.compile(re_patt_str)
     validated_rows = []
     for row in r:
@@ -39,7 +43,8 @@ def validate_dictreader(r):
             raise ValueError(f"{quotechar=} found in {row=}")
         validated_rows.append(row)
     for row in validated_rows:
-        print(row) # Only print rows if entire DataFrame validated
+        print(row)  # Only print rows if entire DataFrame validated
+
 
 def validate_str(input_str, sample_df=sample_df):
     """

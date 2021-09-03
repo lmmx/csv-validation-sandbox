@@ -29,7 +29,7 @@ def validate_dictreader(
     quotechar='"',
     doublequote=True,
     printout=False,
-) -> None | list[dict[str,str]]:
+) -> None | list[dict[str, str]]:
     """
     Args:
       r : (:class:`csv.DictReader`) The DictReader which can be iterated to give the rows to be validated
@@ -65,56 +65,67 @@ def validate_str(input_str, sample_df=sample_df):
     return validate_dictreader(r)
 
 
+### Tests begin here
+
+
 @mark.parametrize(
-    "overfull_rows_str,expected",
-    [(
-        '1,2,hello\n3,4,world\n5,6,"foo\n7,8,bar\n9,10,baz"\n5,6,"foo\n',
-        [
-            {'intA': '1', 'intB': '2', 'strC': 'hello'},
-            {'intA': '3', 'intB': '4', 'strC': 'world'},
-            {'intA': '5', 'intB': '6', 'strC': 'foo\n7,8,bar\n9,10,baz'},
-            {'intA': '5', 'intB': '6', 'strC': 'foo\n'},
-        ],
-    )],
+    "rows_str,expected",
+    [
+        (
+            '1,2,hello\n3,4,world\n5,6,"foo\n7,8,bar\n9,10,baz"\n5,6,"foo\n',
+            [
+                {"intA": "1", "intB": "2", "strC": "hello"},
+                {"intA": "3", "intB": "4", "strC": "world"},
+                {"intA": "5", "intB": "6", "strC": "foo\n7,8,bar\n9,10,baz"},
+                {"intA": "5", "intB": "6", "strC": "foo\n"},
+            ],
+        )
+    ],
 )
-def test_overfull_rows_str(overfull_rows_str, expected):
+def test_overfull_rows_str(rows_str, expected):
     """
     The overfull rows string is valid but its final entry of its final row ends in a
     newline, indicating an unfinished or 'open' field.
     """
-    validated = validate_str(input_str=overfull_rows_str)
+    validated = validate_str(input_str=rows_str)
     print(validated)
     print(expected)
     assert validated == expected
     assert [*validated[-1].values()][-1].endswith("\n")
 
+
 @mark.parametrize(
-    "overfull_rows_str_backwards,err_msg",
-    [(
-        '\n1,2,hello\n3,4,world\n5,6,"foo\n7,8,bar\n9,10,baz"\n5,6,"foo'[::-1],
-        'quotechar=\'"\' found in row={\'intA\': \'oof"\', \'intB\': \'6\', \'strC\': \'5\'}'
-    )],
+    "rows_str_rev,err_msg",
+    [
+        (
+            '\n1,2,hello\n3,4,world\n5,6,"foo\n7,8,bar\n9,10,baz"\n5,6,"foo'[::-1],
+            "quotechar='\"' found in row={'intA': 'oof\"', 'intB': '6', 'strC': '5'}",
+        )
+    ],
 )
-def test_overfull_rows_str_backwards(overfull_rows_str_backwards, err_msg):
+def test_overfull_rows_str_backwards(rows_str_rev, err_msg):
     """
     The overfull rows string is valid but its printout shows it ends in a newline
     """
     with raises(ValueError, match=err_msg):
-        validate_str(input_str=overfull_rows_str_backwards)
+        validate_str(input_str=rows_str_rev)
+
 
 @mark.parametrize(
-    "malformed_str,err_msg",
-    [(
-        'hello,world,etc\nfoo"\netc,etc,etc\n',
-        r"Absent field \(incomplete row\) at row={'intA': 'foo\"', 'intB': None, 'strC': None}",
-    )]
+    "rows_str,err_msg",
+    [
+        (
+            'hello,world,etc\nfoo"\netc,etc,etc\n',
+            r"Absent field \(incomplete row\) at row={'intA': 'foo\"', 'intB': None, 'strC': None}",
+        )
+    ],
 )
-def test_absent_field_str(malformed_str, err_msg):
+def test_absent_field_str(rows_str, err_msg):
     """
-    This string is like the overfull_rows_str but the newline comes directly after the
-    quotechar, indicating that where a new row was expected to start, it turned out that
-    the previous row was invalid and in fact a single multi-line field within the row
-    that then closed at the substring "foo". At this point, an error is raised.
+    The newline comes directly after the quotechar, indicating that where a new row
+    was expected to start, it turned out that the previous row was invalid and in fact
+    a single multi-line field within the row that then closed at the substring "foo".
+    At this point, an error is raised.
     """
     with raises(ValueError, match=err_msg):
-        validate_str(input_str=malformed_str)
+        validate_str(input_str=rows_str)
