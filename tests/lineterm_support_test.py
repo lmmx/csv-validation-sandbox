@@ -19,6 +19,10 @@ def test_no_lineterm_support(sample_str, sep, linesep, expected):
     """
     Show that the csv module can't read a CSV with non-standard lineterminator (a tilde)
     because the enumerated rows of the reader is an empty list, i.e. nothing is read.
+
+    Derived from pandas test source code:
+    https://github.com/pandas-dev/pandas/blob/42adb9f80fb6a048995087276eda2a16ea1cfb66/
+    pandas/tests/io/parser/test_c_parser_only.py#L70-L77
     """
     r = csv.DictReader(io.StringIO(sample_str), delimiter=sep, lineterminator=linesep)
     assert list(r) == expected
