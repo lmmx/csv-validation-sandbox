@@ -82,10 +82,11 @@ def validate_str(input_str, sample_df=sample_df):
         )
     ],
 )
-def test_overfull_rows_str(rows_str, expected):
+def test_multiline_rows_str(rows_str, expected):
     """
-    The overfull rows string is valid but its final entry of its final row ends in a
-    newline, indicating an unfinished or 'open' field.
+    Show the 1st multiline field value is parsed and the 2nd multiline field value is
+    indicated as still 'open' at the end of the string by the presence of a newline at
+    the end of the field value.
     """
     validated = validate_str(input_str=rows_str)
     print(validated)
@@ -103,9 +104,13 @@ def test_overfull_rows_str(rows_str, expected):
         )
     ],
 )
-def test_overfull_rows_str_backwards(rows_str_rev, err_msg):
+def test_multiline_rows_str_backwards(rows_str_rev, err_msg):
     """
-    The overfull rows string is valid but its printout shows it ends in a newline
+    Show that the same string as before (but read right to left) with a 'completed'
+    (closed) multiline field value and an 'open' (unclosed) multiline field value raises
+    an error (thrown due to the newline at the end of that field value, since in a
+    parsing situation this would correspond to a need to advance the reverse start
+    position to the next [rightward, forward] lineterminator).
     """
     with raises(ValueError, match=err_msg):
         validate_str(input_str=rows_str_rev)
