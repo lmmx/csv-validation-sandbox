@@ -1,4 +1,5 @@
 # From https://github.com/lmmx/csv-validation-sandbox/issues/1#issuecomment-912498007
+from __future__ import annotations
 import io
 import pandas as pd
 from pytest import mark
@@ -7,11 +8,15 @@ __all__ = []
 
 
 def trivial_return(value):
-    "Return the value from the CSV parser completely unchanged."
+    "Return a value unchanged (used to override pandas CSV parser dtype conversion)."
     return value
 
 
-def make_df(n_cols, rows_str):
+def make_df(n_cols: int, rows_str: str) -> pd.DataFrame:
+    """
+    Read a CSV into a DataFrame without NaN value conversion so that any None values are
+    only present due to a missing field, permitting a check for parsed CSV column count.
+    """
     return pd.read_csv(
         io.StringIO(rows_str),
         keep_default_na=False,
