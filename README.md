@@ -14,3 +14,5 @@ This repo contains tests (which can be run with `pytest tests/`):
   so that absent fields can be detected during validation.
 - `lineterm_support_test.py`, a pytest suite demonstrating that the lineterminator argument to
   `csv.DictReader` does nothing while the argument to pandas works as expected.
+
+For implementation purposes, the `pandas_nan_validation_test.py` module is the 'end result'
