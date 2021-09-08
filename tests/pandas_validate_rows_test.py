@@ -17,9 +17,13 @@ def validate_df(
     escapechar=r"\\",
     quotechar='"',
     doublequote=True,
-    printout=False,
 ) -> None | list[dict[str, str]]:
     """
+    Validate that the DataFrame does not contain ``None`` values and does not have
+    ``quotechar`` characters within any field values. Arguments other than those below
+    are the same as those passed to :function:`pandas.read_csv` (``escapechar``,
+    ``quotechar``, ``doublequote``).
+
     Args:
       df : (:class:`pd.DataFrame`) The DataFrame which can be iterated to give the
            rows to be validated in the form of :class:`pd.Series` objects (one per row).
@@ -42,14 +46,11 @@ def validate_df(
         if any(isinstance(v, str) and re_patt.match(v) for v in row.values()):
             raise ValueError(f"{quotechar=} found in {row=}")
         validated_rows.append(row)
-    if printout:
-        print()
+    print()
     for row in validated_rows:
-        if printout:
-            print(row)  # Only print rows if entire DataFrame validated
-        else:
-            output.append(row)
-    return None if printout else output
+        print(row)  # Only print rows if entire DataFrame validated
+        output.append(row)
+    return output
 
 
 def validate_str(input_str, sample_colnames=sample_df.columns):
@@ -58,7 +59,7 @@ def validate_str(input_str, sample_colnames=sample_df.columns):
     available through the ``sample_df`` DataFrame (sampled from the file's head).
     """
     df = pd.read_csv(io.StringIO(input_str), names=sample_colnames)
-    return validate_df(df, printout=False)
+    return validate_df(df)
 
 
 ### Tests begin here
