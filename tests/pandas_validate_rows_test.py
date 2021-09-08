@@ -34,7 +34,10 @@ def validate_df(
     output = []
     for row_idx, row_series in df.iterrows():
         row = row_series.to_dict()
-        if float("nan") in row.values():
+        if any(
+            isinstance(v, float) and repr(v) == "nan"
+            for v in row.values()
+        ):
             raise ValueError(f"Absent field (incomplete row) at {row=}")
         if any(isinstance(v, str) and re_patt.match(v) for v in row.values()):
             raise ValueError(f"{quotechar=} found in {row=}")
@@ -142,18 +145,16 @@ def test_multiline_rows_str_backwards(rows_str_rev, err_msg):
    "rows_str,err_msg",
    [
        (
-           'hello,world,etc\nfoo"\netc,etc,etc\n',
-           #"Absent field \(incomplete row\) at row={'intA': 'foo\"', 'intB': nan, 'strC': nan}",
-           "quotechar.* found in.*", # Actually precedes the absent field error...
+           'hello,new,world\nfoo,bar\netc,etc,etc\n',
+           "Absent field \(incomplete row\) at row={'intA': 'foo', 'intB': 'bar', 'strC': nan}",
        )
    ],
 )
 def test_absent_field_str(rows_str, err_msg):
    """
-   The newline comes directly after the quotechar, indicating that where a new row
-   was expected to start, it turned out that the previous row was invalid and in fact
-   a single multi-line field within the row that then closed at the substring "foo".
-   At this point, an error is raised.
+   This test shows that the absent field is coerced to NaN, with no validation error thrown.
+   This is because comparing float("nan") to itself will fail. This makes it not fit for
+   purpose to use in validation.
    """
    with raises(ValueError, match=err_msg):
        validate_str(input_str=rows_str)
