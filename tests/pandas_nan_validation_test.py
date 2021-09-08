@@ -5,13 +5,14 @@ import pandas as pd
 from pytest import mark, raises
 import re
 
-__all__ = []
+__all__ = ["validate_df", "validate_str", "trivial_return", "make_df"]
 
 def validate_df(
     df,
     escapechar=r"\\",
     quotechar='"',
     doublequote=True,
+    verbose=True,
 ) -> None | list[dict[str, str]]:
     """
     Validate that the DataFrame does not contain ``None`` values and does not have
@@ -20,8 +21,9 @@ def validate_df(
     ``quotechar``, ``doublequote``).
 
     Args:
-      df : (:class:`pd.DataFrame`) The DataFrame which can be iterated to give the
-           rows to be validated in the form of :class:`pd.Series` objects (one per row).
+      df      : (:class:`pd.DataFrame`) DataFrame which can be iterated to give rows to
+                be validated in the form of :class:`pd.Series` objects (one per row).
+      verbose : Whether to print the rows once validated (default: ``False``)
     """
     n_matchable = 1 + int(doublequote)
     re_patt_str = (
@@ -37,11 +39,10 @@ def validate_df(
         if any(isinstance(v, str) and re_patt.match(v) for v in row.values()):
             raise ValueError(f"{quotechar=} found in {row=}")
         validated_rows.append(row)
-    print()
-    for row in validated_rows:
-        print(row)  # Only print rows if entire DataFrame validated
-        output.append(row)
-    return output
+    if verbose:
+        for row in validated_rows:
+            print(row)  # Only print rows if entire DataFrame validated
+    return validated_rows
 
 
 def validate_str(input_str, sample_colnames=None):

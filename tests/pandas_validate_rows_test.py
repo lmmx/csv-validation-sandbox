@@ -6,7 +6,7 @@ import pandas as pd
 from pandas.errors import ParserError
 from pytest import mark, raises
 
-__all__ = ["reader", "validate_df", "validate_str"]
+__all__ = ["sample_df", "validate_df", "validate_str"]
 
 sample_header_bytestr = b"intA,intB,strC\n"
 sample_df = pd.read_csv(io.BytesIO(sample_header_bytestr))
