@@ -19,3 +19,9 @@ For implementation purposes, the `pandas_nan_validation_test.py` module is the '
 It contains a `make_df` and a `validate_df` function which are chained together through a
 `validate_str` function, which takes `sample_colnames` as provided column names from a sample
 DataFrame. (N.B.: in fact only the number of these columns is necessary)
+
+Some of the tests use an editable installation of `fsspec-reference-maker`:
+
+- `fsspec-offsets-calc.py` has cases showing the expected output for various block sizes
+  corresponding to the row size of a CSV, with commented out lines in the expected value
+  (and code comments) showing the 'working' so to speak.
