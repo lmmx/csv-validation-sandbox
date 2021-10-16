@@ -69,7 +69,7 @@ def test_row_even_blocksize(file_text, expected):
         )
     ],
 )
-def test_row_under_blocksize(file_text, expected):
+def test_row_over_blocksize(file_text, expected):
     """
     Use a file with row length smaller than the blocksize. It has 0-length offsets.
     """
@@ -90,7 +90,7 @@ def test_row_under_blocksize(file_text, expected):
         )
     ],
 )
-def test_row_over_blocksize(file_text, expected):
+def test_row_under_blocksize(file_text, expected):
     """
     Use a file with row length smaller than the blocksize.
     """
