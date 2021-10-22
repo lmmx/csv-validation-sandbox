@@ -1,6 +1,6 @@
 from pathlib import Path
 import time
-from fsspec_reference_maker.csv import SingleCsvToPartitions
+from kerchunk.csv import SingleCsvToPartitions
 from pytest import mark
 
 # p = Path.home() / "dev/wikitransp/src/wikitransp/data/store/wit_v1.train.all-1percent_sample.tsv"

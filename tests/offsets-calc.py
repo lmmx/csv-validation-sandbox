@@ -1,6 +1,6 @@
 from pathlib import Path
 import time
-from fsspec_reference_maker.csv import SingleCsvToPartitions
+from kerchunk.csv import SingleCsvToPartitions
 from pytest import mark
 
 # p = Path.home() / "dev/wikitransp/src/wikitransp/data/store/wit_v1.train.all-1percent_sample.tsv"
@@ -22,7 +22,7 @@ def evaluate_partitions(file_text, **partition_kwargs):
     file_path.write_text(file_text)
     url = str(file_path)
     with open(file_path) as csv:
-        partitions = SingleCsvToPartitions(csv, url, **partition_kwargs)
+        partitions = SingleCsvToPartitions(csv, url, sep="\t", **partition_kwargs)
         partitions.translate()
     return partitions
 
