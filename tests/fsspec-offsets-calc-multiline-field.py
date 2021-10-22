@@ -29,7 +29,9 @@ def evaluate_partitions(file_text, **partition_kwargs):
     file_path.write_text(file_text)
     url = str(file_path)
     with open(file_path) as csv:
-        partitions = SingleCsvToPartitions(csv, url, **partition_kwargs)
+        partitions = SingleCsvToPartitions(
+            csv, url, sep="\t", sample_tail_rows=2, **partition_kwargs
+        )
         partitions.translate()
     return partitions
 
@@ -41,9 +43,10 @@ def evaluate_partitions(file_text, **partition_kwargs):
             multiline_dummy_text,
             {
                 0: ["{{u}}", 0, 11],    # 0
-                11: ["{{u}}", 11, 15],  # 10
-                26: ["{{u}}", 26, 8],   # 20
-                34: ["{{u}}", 34, 11],  # 30
+                11: ["{{u}}", 11, 23],  # 10
+                #26: ["{{u}}", 26, 8],   # 20 : Skipped (non-row-terminating)
+                34: ["{{u}}", 34, 11],  # 20
+                # 45: ["{{u}}", 45, 0], # 30 : Skipped (blocksize overshoot)
                 ## 40: ["{{u}}", 45, 0], # 40 : Skipped (EOF)
             },
         )
@@ -66,9 +69,9 @@ def test_row_even_blocksize(file_text, expected):
                 0: ['{{u}}', 0, 5],
                 5: ['{{u}}', 5, 6],
                 11: ['{{u}}', 11, 7],
-                18: ['{{u}}', 18, 8],
-                26: ['{{u}}', 26, 8],
-                34: ['{{u}}', 34, 11]
+                18: ['{{u}}', 18, 16],
+                #26: ['{{u}}', 26, 8], # omitted (non-row-terminating)
+                34: ['{{u}}', 34, 11] 
                 ## 35: ["{{u}}", 45, 0], # 35 : Skipped (blocksize overshoot)
                 ## 40: ["{{u}}", 45, 0], # 40 : Skipped (blocksize overshoot)
                 ## 45: ["{{u}}", 45, 0], # 45 : Skipped (EOF)
@@ -90,8 +93,9 @@ def test_row_over_blocksize(file_text, expected):
         (
             multiline_dummy_text,
             {
-                0: ["{{u}}", 0, 26],     # 0
-                26: ["{{u}}", 26, 19],  # 20
+                0: ["{{u}}", 0, 34],     # 0
+                # 26: ["{{u}}", 26, 19],  # 20 : Skipped (non-row-terminating)
+                34: ["{{u}}", 34, 11],  # 20
                 ## 40: ["{{u}}", 44, 0], # 40 : Skipped (EOF)
             },
         )
