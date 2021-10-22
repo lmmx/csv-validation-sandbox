@@ -18,7 +18,8 @@ aga\tin...!
 #  2  hel  lo\nwor\tld
 #  3  aga       in...!
 
-# Newline at pos 24 becomes 25 and is no longer row-terminating
+# Newline at pos 24 becomes 25 and is no longer row-terminating,
+# therefore whichever would start at 26 will instead start at 34
 
 def evaluate_partitions(file_text, **partition_kwargs):
     """
